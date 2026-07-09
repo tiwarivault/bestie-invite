@@ -232,8 +232,46 @@
 
   .hidden { display: none; }
 
+  /* ---- delightful extras (orchid / choco / butterfly theme) ---- */
+  .card { animation: cardIn 0.7s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* beating orchid heart on the reveal */
+  .popup .beat {
+    display: inline-block;
+    animation: beat 1.1s ease-in-out infinite;
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.22); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.13); }
+    56% { transform: scale(1); }
+  }
+
+  /* floating confetti pieces spawned on accept/reveal */
+  .confetti {
+    position: fixed;
+    bottom: -40px;
+    z-index: 50;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    will-change: transform, opacity;
+    animation: rise var(--dur, 3.4s) ease-in var(--delay, 0s) forwards;
+  }
+  .confetti.heart { color: #DA70D6; }
+  @keyframes rise {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    12%  { opacity: 1; }
+    100% { transform: translate(var(--x, 0), -112vh) rotate(var(--spin, 180deg)); opacity: 0; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .deco, .accept, .popup { animation: none; transition: none; }
+    .deco, .accept, .popup, .card, .beat, .confetti { animation: none; transition: none; }
   }
 </style>
 
@@ -312,7 +350,7 @@
       <button id="revealBtn" class="secondary">Aww, one more thing…</button>
     </div>
     <div id="step2" class="hidden">
-      <p class="big" style="color:#DA70D6;">&#9829;&#65038;</p>
+      <p class="big beat" style="color:#DA70D6;">&#9829;&#65038;</p>
       <p class="love">Love you my bestie</p>
       <button id="closeBtn">Close</button>
     </div>
@@ -328,12 +366,62 @@
   document.getElementById('dateStr').textContent = dateStr + ' · ';
 
   var overlay = document.getElementById('overlay');
+
+  // celebratory burst of orchid hearts, butterflies & chocolates
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function rand(min, max) { return Math.random() * (max - min) + min; }
+
+  function burst(count, heavy) {
+    if (reduceMotion) return;
+    var pieces = heavy
+      ? ['heart', 'heart', '🦋', '🍫', 'orchid']
+      : ['heart', '🦋'];
+    for (var i = 0; i < count; i++) {
+      var pick = pieces[Math.floor(rand(0, pieces.length))];
+      var el;
+      if (pick === 'orchid') {
+        el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        el.setAttribute('viewBox', '0 0 100 100');
+        var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '#orchid');
+        el.appendChild(use);
+        var s = rand(20, 40);
+        el.style.width = s + 'px';
+        el.style.height = s + 'px';
+      } else {
+        el = document.createElement('span');
+        if (pick === 'heart') {
+          el.className = 'heart';
+          el.textContent = '♥︎';
+          el.style.fontSize = rand(20, 40) + 'px';
+        } else {
+          el.textContent = pick;
+          el.style.fontSize = rand(18, 34) + 'px';
+        }
+      }
+      el.className = 'confetti' + (el.className ? ' ' + el.className : '');
+      el.style.left = rand(4, 92) + '%';
+      el.style.setProperty('--x', rand(-70, 70) + 'px');
+      el.style.setProperty('--spin', rand(-220, 220) + 'deg');
+      el.style.setProperty('--dur', rand(2.8, 4.4) + 's');
+      el.style.setProperty('--delay', rand(0, 0.6) + 's');
+      document.body.appendChild(el);
+      setTimeout((function (node) {
+        return function () { node.remove(); };
+      })(el), 5200);
+    }
+  }
+
   document.getElementById('acceptBtn').addEventListener('click', function () {
     overlay.classList.add('show');
+    burst(26, true);
   });
   document.getElementById('revealBtn').addEventListener('click', function () {
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
+    burst(16, false);
   });
   document.getElementById('closeBtn').addEventListener('click', function () {
     overlay.classList.remove('show');
