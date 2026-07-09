@@ -1,0 +1,343 @@
+<meta charset="utf-8">
+<title>A little invite for my bestie</title>
+<style>
+  :root {
+    --ink: #3a1410;
+    --paper: #fff6ec;
+    --lantern: #d7302f;
+    --lantern-deep: #a51f24;
+    --gold: #e8b64c;
+    --gold-soft: #f4d99a;
+    --blush: #f7c6b0;
+    --shadow: rgba(74, 12, 8, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body { margin: 0; }
+
+  .stage {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+    font-family: "Georgia", "Times New Roman", serif;
+    color: var(--paper);
+    background:
+      radial-gradient(120% 90% at 50% -10%, #e2493f 0%, var(--lantern) 38%, var(--lantern-deep) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* floating orchids + chocolates in the backdrop */
+  .deco {
+    position: absolute;
+    animation: drift 9s ease-in-out infinite;
+    z-index: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+  .deco.orchid { opacity: 0.85; filter: drop-shadow(0 6px 10px rgba(74,12,8,0.25)); }
+  .deco.choco { opacity: 0.92; filter: drop-shadow(0 5px 9px rgba(40,10,6,0.4)); }
+  .deco.fly {
+    opacity: 0.9;
+    filter: drop-shadow(0 5px 9px rgba(40,10,6,0.3));
+    animation: flutter 7s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-18px) rotate(4deg); }
+  }
+  @keyframes flutter {
+    0%, 100% { transform: translate(0, 0) rotate(-6deg); }
+    33% { transform: translate(12px, -16px) rotate(7deg); }
+    66% { transform: translate(-9px, -7px) rotate(-3deg); }
+  }
+
+  .card {
+    position: relative;
+    width: min(440px, 100%);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 22px;
+    padding: 40px 34px 36px;
+    box-shadow: 0 24px 60px var(--shadow), 0 0 0 6px rgba(232, 182, 76, 0.35);
+    text-align: center;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--lantern-deep);
+    margin: 0 0 14px;
+  }
+
+  .headline {
+    font-size: 34px;
+    line-height: 1.12;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    font-weight: 700;
+  }
+  .headline .amp { color: var(--lantern); font-style: italic; }
+
+  .sub {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 15px;
+    color: #7a3b2f;
+    margin: 0 0 24px;
+  }
+
+  .details {
+    display: grid;
+    gap: 12px;
+    text-align: left;
+    margin: 0 auto 28px;
+    max-width: 300px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  }
+  .row .ic {
+    width: 40px; height: 40px;
+    flex: none;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(160deg, var(--gold-soft), var(--gold));
+    font-size: 20px;
+  }
+  .row .k {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: #a15c4a; margin: 0;
+  }
+  .row .v { font-size: 16px; font-weight: 700; margin: 2px 0 0; color: var(--ink); }
+
+  .divider {
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--blush) 0 8px, transparent 8px 14px);
+    margin: 0 0 24px;
+  }
+
+  .accept {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    background: linear-gradient(160deg, var(--lantern), var(--lantern-deep));
+    border: none;
+    border-radius: 999px;
+    padding: 16px 40px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(165, 31, 36, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .accept:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(165, 31, 36, 0.5); }
+  .accept:active { transform: translateY(0); }
+  .accept:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+  .foot {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 12px;
+    color: #b07b6b;
+    margin: 18px 0 0;
+  }
+
+  /* ---- popup ---- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 8, 5, 0.6);
+    backdrop-filter: blur(3px);
+    display: none;
+    place-items: center;
+    padding: 24px;
+    z-index: 10;
+  }
+  .overlay.show { display: grid; }
+
+  .popup {
+    width: min(360px, 100%);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 20px;
+    padding: 34px 28px;
+    text-align: center;
+    box-shadow: 0 24px 60px var(--shadow), 0 0 0 5px rgba(232, 182, 76, 0.4);
+    transform: scale(0.85);
+    opacity: 0;
+    transition: transform 0.28s cubic-bezier(.2,.9,.3,1.4), opacity 0.28s ease;
+  }
+  .overlay.show .popup { transform: scale(1); opacity: 1; }
+
+  .popup .big { font-size: 46px; margin: 0 0 8px; }
+  .popup h2 { font-size: 24px; margin: 0 0 8px; }
+  .popup p {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 15px; color: #7a3b2f; margin: 0 0 22px;
+  }
+  .popup .love {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--lantern-deep);
+    margin: 0 0 22px;
+  }
+  .popup button {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-weight: 700;
+    color: var(--paper);
+    background: linear-gradient(160deg, var(--lantern), var(--lantern-deep));
+    border: none; border-radius: 999px;
+    padding: 13px 30px; cursor: pointer;
+    box-shadow: 0 8px 18px rgba(165, 31, 36, 0.4);
+  }
+  .popup button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+  .wa-btn {
+    display: inline-block;
+    text-decoration: none;
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(160deg, #25d366, #128c4b);
+    border-radius: 999px;
+    padding: 14px 30px;
+    margin: 0 0 14px;
+    box-shadow: 0 8px 18px rgba(18, 140, 75, 0.4);
+    transition: transform 0.15s ease;
+  }
+  .wa-btn:hover { transform: translateY(-2px); }
+  .wa-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+  .popup .tiny {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 12px;
+    color: #b07b6b;
+    margin: 0 0 16px;
+  }
+  .popup .secondary {
+    background: none;
+    color: var(--lantern-deep);
+    box-shadow: none;
+    text-decoration: underline;
+    padding: 6px 10px;
+  }
+
+  .hidden { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deco, .accept, .popup { animation: none; transition: none; }
+  }
+</style>
+
+<div class="stage">
+  <!-- orchid template (hidden, cloned visually below) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="orchid" viewBox="0 0 100 100">
+      <g>
+        <ellipse cx="50" cy="26" rx="15" ry="24" fill="#e9a8d4"/>
+        <ellipse cx="26" cy="42" rx="14" ry="22" transform="rotate(-52 26 42)" fill="#dd8fc6"/>
+        <ellipse cx="74" cy="42" rx="14" ry="22" transform="rotate(52 74 42)" fill="#dd8fc6"/>
+        <ellipse cx="34" cy="70" rx="13" ry="20" transform="rotate(-24 34 70)" fill="#e9a8d4"/>
+        <ellipse cx="66" cy="70" rx="13" ry="20" transform="rotate(24 66 70)" fill="#e9a8d4"/>
+        <path d="M50 48 q-14 8 -8 26 q8 12 16 0 q6 -18 -8 -26 z" fill="#a5408a"/>
+        <circle cx="50" cy="56" r="6" fill="#f4d99a"/>
+        <circle cx="46" cy="53" r="2" fill="#8a2f72"/>
+        <circle cx="54" cy="53" r="2" fill="#8a2f72"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <svg class="deco orchid" style="width:78px;height:78px;top:7%;left:9%;animation-delay:0s;"><use href="#orchid"/></svg>
+  <svg class="deco orchid" style="width:54px;height:54px;top:20%;left:82%;animation-delay:1.2s;"><use href="#orchid"/></svg>
+  <svg class="deco orchid" style="width:92px;height:92px;top:66%;left:6%;animation-delay:2.6s;"><use href="#orchid"/></svg>
+  <svg class="deco orchid" style="width:60px;height:60px;top:74%;left:85%;animation-delay:1.8s;"><use href="#orchid"/></svg>
+  <svg class="deco orchid" style="width:44px;height:44px;top:44%;left:90%;animation-delay:3.4s;"><use href="#orchid"/></svg>
+
+  <span class="deco choco" style="font-size:38px;top:14%;left:44%;animation-delay:0.6s;">🍫</span>
+  <span class="deco choco" style="font-size:30px;top:34%;left:16%;animation-delay:2.2s;">🍫</span>
+  <span class="deco choco" style="font-size:34px;top:56%;left:78%;animation-delay:1s;">🍫</span>
+  <span class="deco choco" style="font-size:26px;top:82%;left:32%;animation-delay:3s;">🍫</span>
+  <span class="deco choco" style="font-size:32px;top:88%;left:62%;animation-delay:1.6s;">🍫</span>
+  <span class="deco choco" style="font-size:24px;top:6%;left:68%;animation-delay:2.8s;">🍫</span>
+
+  <span class="deco fly" style="font-size:34px;top:12%;left:24%;animation-delay:0.3s;">🦋</span>
+  <span class="deco fly" style="font-size:26px;top:40%;left:72%;animation-delay:1.5s;">🦋</span>
+  <span class="deco fly" style="font-size:30px;top:62%;left:40%;animation-delay:2.4s;">🦋</span>
+  <span class="deco fly" style="font-size:22px;top:80%;left:12%;animation-delay:3.2s;">🦋</span>
+  <span class="deco fly" style="font-size:28px;top:28%;left:56%;animation-delay:0.9s;">🦋</span>
+
+  <div class="card">
+    <p class="eyebrow">You're invited</p>
+    <h1 class="headline">Chinese <span class="amp">&amp;</span> chai,<br>you &amp; me</h1>
+    <p class="sub">A tiny catch-up. Long overdue, bestie. 💛</p>
+
+    <div class="details">
+      <div class="row">
+        <span class="ic">🥡</span>
+        <div><p class="k">The plan</p><p class="v">Chinese food &amp; hot tea</p></div>
+      </div>
+      <div class="row">
+        <span class="ic">🕢</span>
+        <div><p class="k">Today, by</p><p class="v"><span id="dateStr"></span>7:30 PM</p></div>
+      </div>
+      <div class="row">
+        <span class="ic">📍</span>
+        <div><p class="k">Where</p><p class="v">Our usual spot, nearby</p></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="accept" id="acceptBtn">Accept the invite 💌</button>
+    <p class="foot">One tap and it's a date.</p>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="popTitle">
+  <div class="popup">
+    <div id="step1">
+      <p class="big">🎉</p>
+      <h2 id="popTitle">Yay — you're in!</h2>
+      <p>See you today by 7:30. I'm already hungry.</p>
+      <a class="wa-btn" id="waBtn" href="https://wa.me/918879944117?text=Invite%20accepted%20%F0%9F%92%8C" target="_blank" rel="noopener">Let me know on WhatsApp 💬</a>
+      <p class="tiny">One tap sends “Invite accepted 💌” to me.</p>
+      <button id="revealBtn" class="secondary">Aww, one more thing…</button>
+    </div>
+    <div id="step2" class="hidden">
+      <p class="big">💛</p>
+      <p class="love">Love you my bestie</p>
+      <button id="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Show the date of the day the invite is opened
+  var today = new Date();
+  var dateStr = today.toLocaleDateString('en-GB', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+  });
+  document.getElementById('dateStr').textContent = dateStr + ' · ';
+
+  var overlay = document.getElementById('overlay');
+  document.getElementById('acceptBtn').addEventListener('click', function () {
+    overlay.classList.add('show');
+  });
+  document.getElementById('revealBtn').addEventListener('click', function () {
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+  });
+  document.getElementById('closeBtn').addEventListener('click', function () {
+    overlay.classList.remove('show');
+    document.getElementById('step1').classList.remove('hidden');
+    document.getElementById('step2').classList.add('hidden');
+  });
+</script>
